@@ -1,0 +1,51 @@
+@startuml
+!theme aws-orange
+allow_mixing
+'skinparam ranksep 150
+skinparam nodesep 100
+top to bottom direction
+ 
+namespace Source {
+    database "**<color:white>World Health Organization</color>**" as cua 
+    database "**<color:white>Connections' API</color>**" as ar
+}
+
+namespace "Domain Knowledge Acquisition & Pre-processing" as DKAP {
+    card Collector 
+    card Cleaner
+    card Storer
+    card "DB Viewer" as dbv
+}
+
+namespace "Knowledge Graph Creation and Embedding" as KGCE {
+    card IO 
+    card "Class Converter" as ClassConverter
+    card "<color:white>Graph Contructor</color>" as gc 
+}
+
+namespace Neo4j{
+    card "Graph Data Lab" as gdl
+    card "Graph Viewer" as gv
+    database "**<color:white>Table de Resultats</color>**" as tr
+    database "**<color:white>Embeddings</color>**" as Embeddings
+}
+
+
+DKAP.Collector -u-> Source.cua
+DKAP.Collector -u-> Source.ar
+
+
+DKAP.Collector -r-> DKAP.Cleaner
+DKAP.Cleaner -r-> DKAP.Storer
+DKAP.Cleaner -d-> DKAP.dbv
+DKAP.Storer -r-> KGCE.IO
+
+KGCE.IO -r-> KGCE.ClassConverter
+KGCE.ClassConverter -r-> KGCE.gc
+KGCE.gc -d-> Neo4j.gdl
+
+Neo4j.gdl -d-> Neo4j.tr
+Neo4j.gdl -d-> Neo4j.gv
+Neo4j.gdl -d-> Neo4j.Embeddings
+
+@enduml
